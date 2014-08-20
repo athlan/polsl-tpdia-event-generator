@@ -22,6 +22,10 @@ The number of columns is same as image width. The position is
 bottom-related, that means the position od most black pixel is defined
 as offset position from the bottom of image.
 
+#### Example BMP plot
+
+![Example BMP plot](https://raw.githubusercontent.com/athlan/polsl-tpdia-event-generator/master/DumpPlotDataFromBmp/wykres.bmp)
+
 #### Run precompiled program
 
 ```
