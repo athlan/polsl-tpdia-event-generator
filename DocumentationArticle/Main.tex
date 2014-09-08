@@ -6,6 +6,7 @@
 \usepackage{float}
 \usepackage{enumitem}
 \usepackage{hyperref}
+\usepackage{polski}
 
 % images
 \usepackage{graphicx}
@@ -64,7 +65,7 @@ backgroundcolor=\color{lbcolor},
 \author{
 	  Pelczar Piotr\\
 	  \small{\texttt{piotpel817@student.polsl.pl}}
-	  \and
+	  \\[3ex]
 	  Sikora Paweł\\
 	  \small{\texttt{piotpel817@student.polsl.pl}}
 	}
@@ -85,18 +86,16 @@ This paper describes test.
 \tableofcontents
 
 \newpage
-\section{Introduction}
-\label{sec:intro}
 
-Test.
+\input{./partials/introduction.tex}
 
-This benchmark witch source code is avaliable on GitHub:\\
-\url{https://github.com/athlan/polsl-benchmark-sort-algorithms}
+\input{./partials/eventgenerator.tex}
 
-\section{Implementation}
-\subsection{Subsection 1}
+\input{./partials/approaches.tex}
 
-Some text.
+\input{./partials/solutions.tex}
+
+\input{./partials/implementation.tex}
 
 \newpage
 \begin{thebibliography}{9}
