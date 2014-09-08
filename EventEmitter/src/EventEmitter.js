@@ -23,6 +23,6 @@ exports.emitEventsUsingModel = function(model, eventOccurenceCallback) {
 			i = 0
 	}
 	
-	setTimeout(intervalCallback, interval)
+	setInterval(intervalCallback, interval)
 	intervalCallback()
 }
