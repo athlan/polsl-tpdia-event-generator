@@ -1,7 +1,31 @@
 \section{Zmaterializowana lista agregatów}
 
+Aby poradzić sobie z przetwarzaniem większej ilości danych w ramach systemu zarządzania bazą danych stosuje się podejścia umożliwiające skalowanie horyzontalne oraz agregowanie danych. Dla rozwiązań z dużą ilością danych istnieją konkurencyjne rozwiązania do przeprowadzania obliczeń dla zapytań kierowanych bezpośrednio do silnika relacyjnej lub nierelacyjnej bazy danych.
+
 \subsection{Algorytm Map-Reduce}
+
+MapReduce to podejście do przetwarzania ogromnych zbiorów danych w rozproszonych klastrach komputerowych\cite{google-map-reduce}. Stworzone przez Google rozwiązanie ma przewagę nad przetwarzaniem danych wewnątrz systemu bazodanowego, że umożliwia wykonywanie obliczeń na węzłach (w szczególności na klastrze komputerowym).
+
+Podejście opłaca się, jeżeli infrastruktura zapewnia szybki przepływ informacji oraz wysoką odporność na błędy.
+
+Model zakłada dwie fazy opisane w podsekcjach.
+
+\subsubsection{Faza Map}
+
+Główny węzeł przyjmuje dane i definiuje podproblemy, które są wysyłane do innych węzłów. Inne węzły mogą ponownie wykonać fazę map, zgodnie z logicznym połączeniem, dostępnymi zasobami, na zasadzie struktury drzewiastej. Gdy problem zostaje rozwiązany, informacja z rozwiązaniem pokonuje tę samą ścieżkę z powrotem, aż do głównego węzła.
+
+\subsubsection{Faza Shuffle}
+
+Faza Shuffle przydziela wartości węzłom rozpoczynającym fazę Reduce klucze, nad którymi powinny pracować. Zapewnia, że praca jest równo rozłożona pomiędzy węzły.
+
+\subsubsection{Faza Reduce}
+
+Główny węzeł oraz podwezły, które rozpoczęły fazę map zbierają odpowiedzi ze wszystkich podproblemów i formują je, aby udzielić odpowiedzi. W końcu, odpowiedzi trafiają do głównego węzła, który odpowiada wynikiem operacji.
+
+\subsubsection{Implementacja Map-Reduce na przykładzie bazy danych MongoDB}
 
 
 
 \subsection{Agregowanie strumieniowych danych}
+
+
