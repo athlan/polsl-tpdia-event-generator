@@ -3,29 +3,58 @@
 Aby poradzić sobie z przetwarzaniem większej ilości danych w ramach systemu zarządzania bazą danych stosuje się podejścia umożliwiające skalowanie horyzontalne oraz agregowanie danych. Dla rozwiązań z dużą ilością danych istnieją konkurencyjne rozwiązania do przeprowadzania obliczeń dla zapytań kierowanych bezpośrednio do silnika relacyjnej lub nierelacyjnej bazy danych.
 
 \subsection{Algorytm Map-Reduce}
+\label{sec:mapreduce}
 
-MapReduce to podejście do przetwarzania ogromnych zbiorów danych w rozproszonych klastrach komputerowych\cite{google-map-reduce}. Stworzone przez Google rozwiązanie ma przewagę nad przetwarzaniem danych wewnątrz systemu bazodanowego, że umożliwia wykonywanie obliczeń na węzłach (w szczególności na klastrze komputerowym).
+MapReduce to podejście do przetwarzania ogromnych zbiorów danych w rozproszonych klastrach komputerowych\cite{google-map-reduce}. Stworzone przez Google rozwiązanie ma przewagę nad przetwarzaniem danych wewnątrz systemu bazodanowego, ponieważ umożliwia wykonywanie obliczeń na węzłach (w szczególności na klastrze komputerowym).
 
 Podejście opłaca się, jeżeli infrastruktura zapewnia szybki przepływ informacji oraz wysoką odporność na błędy.
 
-Model zakłada dwie fazy opisane w podsekcjach.
+Model zakłada dwie fazy opisane w podsekcjach (oraz fazę pośrednią).
 
 \subsubsection{Faza Map}
+\label{sec:mapreduce-map}
 
-Główny węzeł przyjmuje dane i definiuje podproblemy, które są wysyłane do innych węzłów. Inne węzły mogą ponownie wykonać fazę map, zgodnie z logicznym połączeniem, dostępnymi zasobami, na zasadzie struktury drzewiastej. Gdy problem zostaje rozwiązany, informacja z rozwiązaniem pokonuje tę samą ścieżkę z powrotem, aż do głównego węzła.
+Główny węzeł przyjmuje dane i definiuje podproblemy, które są wysyłane do innych węzłów. Inne węzły mogą ponownie wykonać fazę Map, zgodnie z logicznym połączeniem, dostępnymi zasobami, na zasadzie struktury drzewiastej. Gdy problem zostaje rozwiązany, informacja z rozwiązaniem pokonuje tę samą ścieżkę z powrotem w fazie Reduce (\ref{sec:mapreduce-reduce}), aż do głównego węzła.
+
+Faza map wykorzystuje funkcję mapowania odwzorowującą klucz na wartość. W rezultacie, po kilku wywołaniach funkcji mapowania w fazie uzyskuje się listę wartości pogrupowaną wg klucza.
 
 \subsubsection{Faza Shuffle}
+\label{sec:mapreduce-shuffle}
 
-Faza Shuffle przydziela wartości węzłom rozpoczynającym fazę Reduce klucze, nad którymi powinny pracować. Zapewnia, że praca jest równo rozłożona pomiędzy węzły.
+Faza Shuffle przydziela klcuze węzłom rozpoczynającym fazę Reduce (\ref{sec:mapreduce-reduce}), nad którymi powinny 
+pracować. Zapewnia, że praca jest równo rozłożona pomiędzy węzły przez cały czas trwania procesu.
 
 \subsubsection{Faza Reduce}
+\label{sec:mapreduce-reduce}
 
-Główny węzeł oraz podwezły, które rozpoczęły fazę map zbierają odpowiedzi ze wszystkich podproblemów i formują je, aby udzielić odpowiedzi. W końcu, odpowiedzi trafiają do głównego węzła, który odpowiada wynikiem operacji.
+Główny węzeł oraz podwezły, które rozpoczęły fazę map zbierają odpowiedzi ze wszystkich podproblemów i formują je, aby udzielić finalnej odpowiedzi. W końcu, odpowiedzi trafiają do głównego węzła, który odpowiada wynikiem operacji.
 
-\subsubsection{Implementacja Map-Reduce na przykładzie bazy danych MongoDB}
+W fazie Reduce wykorzystywana jest funkcja redukująca, która jako argumenty otrzymuje klucz oraz listę wartości związanych z danym kluczem. Zadaniem funkcji redukującej jest przekształcenie listy wartości w pojedynczą wartość. Wartości w liście przekazanej jako argument, mogą pochodzić z poprzedniej iteracji fazy Reduce (tj. jako wyniki funkcji redukujących) lub z warunków początkowych z fazy Map. W ten sposób można powielać fazę Reduce, dopóki odpowiedź nie zostanie udzielona w postaci pojedynczej wartości, a nie listy wartości skojarzonej z kluczem.
 
+\subsubsection{Implementacja Map-Reduce na przykładzie bazy danych MongoDB oraz agragacji danych z portalu Twitter}
+\label{sec:mapreduce-implementation-twitter}
 
+Autor Piotr Pelczar pracował nad agregacją danych dotyczących statystyk kont w serwisie Twitter. Każdy wpis w serwisie Twitter jest reprezentowany jako pojedynczy dokument w dokumentowej bazie danych. Dany wpis może być komenatrzem do innego wpisu (\emph{comment}), wzmianką o autorze (ang. \emph{mention}) lub przekazaniem wiadomości dalej (\emph{retweet}).
+
+Z API serwisu Twitter gromadzone są wszystkie wpisy, które są wzmiankami na temat danego autora, przekazaniem jego wiadomości dalej, są wiadomością jego autorstwa lub komentarzem pod nią.
+
+Zadaniem programu jest policzenie, ile dziennie autor posiada wzmianek, komentarzy pod swoimi wpisami lub przekazania wiadomości dalej. Celem zebrania statystyk jest określenie zasięgu użytkownika oraz próbie ocenienia, jaki ma wpływ na innych użytkowników (\emph{influcene}).
+
+\lstinputlisting[language=JavaScript]{./materials/mapreduce-nodejs-mongodb.js}
+
+Definiujemy dwie fazy map:
+
+\begin{itemize}[noitemsep]
+  \item Pierwsza iteruje po wpisach dotyczących autora, wśród nich są komentarze pod jego wpisami oraz wzmianki.
+  \item Druga iteruje po wpisach, które są przekazaniem wiadomości autora dalej przez innych użytkowników.
+\end{itemize}
+
+Faza Map tworzy obiekt z trzema polami: ilością komentarzy, liczbą wiadomości, które zostały przekazane dalej oraz ilością wzmianek. W funkcji map problem jest definiowany jako inkrementowanie wartości pól obiektu w zależności od typu wpisu. Obiekt statystyk jest mapowany na dziedzinę, czyli dane wpisy grupowane są po dniu. Znacznik czasowy dnia stanowi klucz.
+
+Następnie w fazie Reduce wszystkie liczniki przyporządkowane do tej samej daty (mające wspólną wartość dziedziny, czyli klucza) są sumowane. W odpowiedzi otrzymujemy listę zsumowanych statystyk, zgrupowane po dniu.
 
 \subsection{Agregowanie strumieniowych danych}
 
+W nawiązaniu do Contineous Query Language (CQL)\cite{stream-query-gorawski}, operatorowi strumień-relacja o oknie czasowym \cite{stream-query-stanford-stochmialek}\cite{stream-processing-streamsql} oraz agregacji danych w oknach czasowych zostały znalezione rozwiązania, które realizują funkcjonalności przy założeniu, że wyznaczanie przedziału czasowego odbywa się jednokrotnie, a czas jest stały.
 
+Rozpoznane zostały 

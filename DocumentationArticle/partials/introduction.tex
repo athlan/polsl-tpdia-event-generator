@@ -5,7 +5,7 @@ Projekt zadany w ramach przedmiotu Teoria Przestrzeni Danych i Algorytmów zakł
 
 \begin{itemize}[noitemsep]
   \item zapoznanie się z metodami indeksowania źródeł danych strumieniowych, na przykładzie danych pomiarowych pochodzących ze stacji paliw,
-  \item stworzenie generycznego generatora danych emitującego zdarzenia na podstawie założonego modelu (charakterystyce), opisanego w sekcji \ref{sec:eventgenerator},
+  \item stworzenie generycznego generatora danych emitującego zdarzenia na podstawie założonego modelu (charakterystyce), opisanego w sekcji \ref{sec:eventgenerator} odpowiadającemu strumieniowemu źródle danych \ref{stream-query-gorawski},
   \item zaproponowanie rozwiązania implementacji zmaterializowanej listy agregatów dla przeprowadzania obliczeń na strukturach danych w sekcji \ref{sec:implementation}.
 \end{itemize}
 
@@ -13,3 +13,7 @@ Dodatkowo zostały rozpoznane opensourceowe rozwiązania w kontekście ich poten
 
 Praca oraz kody programów zostały opublikowane w serwisie GitHub:\\
 \url{https://github.com/athlan/polsl-tpdia-event-generator}
+
+Oprócz teoretycznej dywagacji, wykonano szereg testów, w tym praktyczne zastosowanie algorytmu MapReduce do agregacji dziennych statystyk dotyczących wpisów wybranych użytkowników umieszczanych w serwisie Twitter (podsekcja \ref{sec:mapreduce-implementation-twitter}). Celem zebrania statystyk jest określenie zasięgu użytkownika oraz probie ocenienia, jaki ma wpływ na innych użytkowników (ang. \emph{influcene}).
+
+W serwisie Twitter użytkownicy zamieszczają około 6.000 wiadomości na sekundę, co daje ponad 518 milionów wiadomości dziennie. Obserwujemy tylko mały wycinek wiadomości, natomiast już do tak małej skali trzeba zaprzęc algorytm MapReduce. To obrazuje, ile danych dziennie danych gromadzonych jest w całym serwisie i z jakimi problemami ekstrakcji danych zmaga się firma Twitter.
