@@ -1,4 +1,20 @@
+
 \section{Generator zdarzeń}
 \label{sec:eventgenerator}
 
-Test.
+	\subsection{Opis generatora zdarzeń}
+Program przy pomocy wykresu zamieszczonego w bmp tworzy tablicę z danymi, która zawiera informację o ilości tankowań w danym dniu.    Program dzieli dobrę na ilość okresów czasów, ich ilość jest równa długości wykresu, natomiast wysokość odpowiada ilości tankowań w tym okresie. Następnie dane przekazywane są do programu, który emituje zdarzenia z danego okresu czasu w równych odstępach. Aplikacja została napisana w sposób by możliwe było podpięcie dużej ilości klientów emitujących dane.
+	\subsection {ModelDataHolder}
+Moduł "ModelDataHolder" odpowiada za przekształcenie pliku bmp do postaci listy tankowań w danych przedziałach czasu. W przypadku gdy na wykresie występują dwie lub więcej wartości dla ilości tankowań moduł wypisuje najniższą wartość.
+\lstinputlisting[language=java]{articlesQuotes/DumpPlotDataFromBmp.java}
+
+	\subsection{EventEmiter}
+Moduł EventEmiter odpowiedzialny jest za przekształcenie danych dostarczonych przez moduł "ModelDataHolder" do postaci tablicowej. Następnie oblicza długość przedziałów czasowych oraz odstęp czasowy pomiędzy występowaniem tankowań w każdym przedziale czasowym. Po obliczeniu długości przedziałów czasowych i odstępów czasowych pomiędzy zdarzeniami w przedzialne, moduł przystępuje do generowania zdarzeń. 
+\lstinputlisting[language=JavaScript]{articlesQuotes/EventEmitter.js}
+
+	\subsection{EventReceiver}
+Moduł "EventReceiver" nasłuchuje i sprawdza wystąpienia tankowań generowanych przez moduł EventEmiter. Przy każdy nowym zdarzeniu moduł "EventReceiver" wykonuje akcje zapisaną w funkcji:
+\lstinputlisting[language=JavaScript]{articlesQuotes/sample-client.js}
+Istnieje możliwość podłączenie większej ilość modułów "EventReceiver".
+
+	\subsection{}
