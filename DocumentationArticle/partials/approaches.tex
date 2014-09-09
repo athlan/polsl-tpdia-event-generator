@@ -21,7 +21,7 @@ Faza map wykorzystuje funkcję mapowania odwzorowującą klucz na wartość. W r
 \subsubsection{Faza Shuffle}
 \label{sec:mapreduce-shuffle}
 
-Faza Shuffle przydziela klcuze węzłom rozpoczynającym fazę Reduce (\ref{sec:mapreduce-reduce}), nad którymi powinny 
+Faza Shuffle przydziela klucze  węzłom rozpoczynającym fazę Reduce (\ref{sec:mapreduce-reduce}), nad którymi powinny 
 pracować. Zapewnia, że praca jest równo rozłożona pomiędzy węzły przez cały czas trwania procesu.
 
 \subsubsection{Faza Reduce}
@@ -31,10 +31,10 @@ Główny węzeł oraz podwezły, które rozpoczęły fazę map zbierają odpowie
 
 W fazie Reduce wykorzystywana jest funkcja redukująca, która jako argumenty otrzymuje klucz oraz listę wartości związanych z danym kluczem. Zadaniem funkcji redukującej jest przekształcenie listy wartości w pojedynczą wartość. Wartości w liście przekazanej jako argument, mogą pochodzić z poprzedniej iteracji fazy Reduce (tj. jako wyniki funkcji redukujących) lub z warunków początkowych z fazy Map. W ten sposób można powielać fazę Reduce, dopóki odpowiedź nie zostanie udzielona w postaci pojedynczej wartości, a nie listy wartości skojarzonej z kluczem.
 
-\subsubsection{Implementacja Map-Reduce na przykładzie bazy danych MongoDB oraz agragacji danych z portalu Twitter}
+\subsubsection{Implementacja Map-Reduce na przykładzie bazy danych MongoDB oraz agregacji danych z portalu Twitter}
 \label{sec:mapreduce-implementation-twitter}
 
-Autor Piotr Pelczar pracował nad agregacją danych dotyczących statystyk kont w serwisie Twitter. Każdy wpis w serwisie Twitter jest reprezentowany jako pojedynczy dokument w dokumentowej bazie danych. Dany wpis może być komenatrzem do innego wpisu (\emph{comment}), wzmianką o autorze (ang. \emph{mention}) lub przekazaniem wiadomości dalej (\emph{retweet}).
+Autor Piotr Pelczar pracował nad agregacją danych dotyczących statystyk kont w serwisie Twitter. Każdy wpis w serwisie Twitter jest reprezentowany jako pojedynczy dokument w dokumentowej bazie danych. Dany wpis może być komentarzem  do innego wpisu (\emph{comment}), wzmianką o autorze (ang. \emph{mention}) lub przekazaniem wiadomości dalej (\emph{retweet}).
 
 Z API serwisu Twitter gromadzone są wszystkie wpisy, które są wzmiankami na temat danego autora, przekazaniem jego wiadomości dalej, są wiadomością jego autorstwa lub komentarzem pod nią.
 
