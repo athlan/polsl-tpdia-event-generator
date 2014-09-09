@@ -10,7 +10,22 @@
 
 \subsection{Hive}
 \label{sec:solutions:hive}
+Apache Hive to projekt, który umożliwia tworzenie kwerend i zarządzanie dużym zbiorem danych znajdujących się w pamięci rozproszonej. Hive wykorzystuje prosty język zapytań podobny do języka SQL. Język ten nazwany został QL. Język ten umożliwia tworzenie zapytań podobnych do zapytań SQL i umożliwia tworzenie własnych funkcji mapujących i redukujących przez użytkowników, którzy znają framework Map/Reduce. Język QL wykorzystywany przez Hive może być rozszerzony przez funkcje skalarne(UDF), agregujące (UDAF) i funkcje tablicowe (UDTF).
 
+Apache Hive posiada:
+\begin{itemize}[noitemsep]
+\item narzędzia ułatwiających proces ETL,
+\item mechanizm do przetwarzania różnych formatów danych,
+\item zapytania wykonywane przy pomocy Map/Reduce
+\end{itemize}
+
+Hive nie oferuje przetwarzania zapytań w czasie rzeczywistym i aktualizacji wierszy o niskim narzucie czasowym. Hive najlepiej wykorzystać do dużych zbiorów danych, które ciągle napływają. Największymi zaletami Hive są:
+\begin{itemize}[noitemsep]
+\item skalowalność (skaluje się poprzez dodanie dodatkowych dynamicznych klastrów do Hadoop)
+\item rozszerzalność ( MapReduce framework, UDF/UDA/UDTF)
+\item tolerancja błędów
+\end{itemize}
+Hive zawiera HCatalog i WebHCat. HCatalog jest warstwą zarządzającą tabelami i pamięcią dla Hadoop, która możliwa użytkownikowi korzystać z różnych narzędzi do przetwarzania danych (np. MapReduce) w celu łatwiejszego odczytu i zapisu danych. WebHCat oferuje usługi, które umożliwiają uruchomienia na Hadoop'ie MapReduce, zadań Hive lub wykonać operację metadanową za pomocą protokołu HTTP(REST).
 
 
 \subsection{Spark (Stream Spark)}
