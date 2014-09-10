@@ -1,4 +1,5 @@
 \section{Implementacja}
+\label{sec:impl}
 
 \subsection{Zmaterializowana lista agregatów}
 \subsubsection{Pojęcie agregatu}
@@ -89,7 +90,7 @@ Przyjmujemy założenie, że agregacja informacji następuje po miejsach (\emph{
 
 Jeżeli agregaty, o które system został zapytany jeszcze nie istnieją w trwałym źródle danych, dekomponowane są na możliwie największe podagregaty (\emph{drążenie danych}). Jeżeli któreś podagregaty są już wcześniej obliczone, nie ma potrzeby ich ponownej dekompozycji, natomiast dla podagregatów, które nie są policzone proces powtarza się, aż proces dekompozycji sięgnie danych źródłowych, które są agregatami atomowymi.
 
-Schemat działania zobrazowany jest na rysunku \ref{impl-aggregate-chunking}.
+Schemat działania zobrazowany jest na rysunku \ref{fig:impl-aggregate-chunking}.
 
 \begin{figure}[h!]
   \centering
@@ -106,7 +107,7 @@ Gdy nowa krotka trafia do systemu, wyliczany jest jej agregat atomowy, a wraz z 
 
 Zaprezentowana w sekcji \ref{sec:impl-mal-aggregate} struktura agregatu posiada pole określające czy agregat jest aktualny. Jeżeli okaże się, że dane agrekaty ulegną dezaktualizacji, można podjąć kroki opisane w sekcji \ref{sec:impl-mal-computing-aggregates} i drążyć agregaty ponownie wykorzystując jednak wszystkie policzone i ważne agregaty na wszytkich poziomach struktury.
 
-Schemat działania zobrazowany jest na rysunku \ref{impl-aggregate-chunking-rebuild}.
+Schemat działania zobrazowany jest na rysunku \ref{fig:impl-aggregate-chunking-rebuild}.
 
 \begin{figure}[h!]
   \centering
