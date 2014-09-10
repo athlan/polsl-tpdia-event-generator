@@ -21,7 +21,7 @@ Faza map wykorzystuje funkcję mapowania odwzorowującą klucz na wartość. W r
 \subsubsection{Faza Shuffle}
 \label{sec:mapreduce-shuffle}
 
-Faza Shuffle przydziela klucze  węzłom rozpoczynającym fazę Reduce (\ref{sec:mapreduce-reduce}), nad którymi powinny 
+Faza Shuffle przydziela klucze węzłom rozpoczynającym fazę Reduce (\ref{sec:mapreduce-reduce}), nad którymi powinny 
 pracować. Zapewnia, że praca jest równo rozłożona pomiędzy węzły przez cały czas trwania procesu.
 
 \subsubsection{Faza Reduce}
@@ -29,12 +29,12 @@ pracować. Zapewnia, że praca jest równo rozłożona pomiędzy węzły przez c
 
 Główny węzeł oraz podwezły, które rozpoczęły fazę map zbierają odpowiedzi ze wszystkich podproblemów i formują je, aby udzielić finalnej odpowiedzi. W końcu, odpowiedzi trafiają do głównego węzła, który odpowiada wynikiem operacji.
 
-W fazie Reduce wykorzystywana jest funkcja redukująca, która jako argumenty otrzymuje klucz oraz listę wartości związanych z danym kluczem. Zadaniem funkcji redukującej jest przekształcenie listy wartości w pojedynczą wartość. Wartości w liście przekazanej jako argument, mogą pochodzić z poprzedniej iteracji fazy Reduce (tj. jako wyniki funkcji redukujących) lub z warunków początkowych z fazy Map. W ten sposób można powielać fazę Reduce, dopóki odpowiedź nie zostanie udzielona w postaci pojedynczej wartości, a nie listy wartości skojarzonej z kluczem.
+W fazie Reduce wykorzystywana jest funkcja redukująca, która jako argumenty otrzymuje klucz oraz listę wartości związanych z danym kluczem. Zadaniem funkcji redukującej jest przekształcenie listy wartości w pojedynczą wartość. Wartości w liście przekazanej, jako argument, mogą pochodzić z poprzedniej iteracji fazy Reduce (tj., jako wyniki funkcji redukujących) lub z warunków początkowych z fazy Map. W ten sposób można powielać fazę Reduce, dopóki odpowiedź nie zostanie udzielona w postaci pojedynczej wartości, a nie listy wartości skojarzonej z kluczem.
 
 \subsubsection{Implementacja Map-Reduce na przykładzie bazy danych MongoDB oraz agregacji danych z portalu Twitter}
 \label{sec:mapreduce-implementation-twitter}
 
-Autor Piotr Pelczar pracował nad agregacją danych dotyczących statystyk kont w serwisie Twitter. Każdy wpis w serwisie Twitter jest reprezentowany jako pojedynczy dokument w dokumentowej bazie danych. Dany wpis może być komentarzem  do innego wpisu (\emph{comment}), wzmianką o autorze (ang. \emph{mention}) lub przekazaniem wiadomości dalej (\emph{retweet}).
+Autor Piotr Pelczar pracował nad agregacją danych dotyczących statystyk kont w serwisie Twitter. Każdy wpis w serwisie Twitter jest reprezentowany, jako pojedynczy dokument w dokumentowej bazie danych. Dany wpis może być komentarzem do innego wpisu (\emph{comment}), wzmianką o autorze (ang. \emph{mention}) lub przekazaniem wiadomości dalej (\emph{retweet}).
 
 Z API serwisu Twitter gromadzone są wszystkie wpisy, które są wzmiankami na temat danego autora, przekazaniem jego wiadomości dalej, są wiadomością jego autorstwa lub komentarzem pod nią.
 
@@ -45,11 +45,11 @@ Zadaniem programu jest policzenie, ile dziennie autor posiada wzmianek, komentar
 Definiujemy dwie fazy map:
 
 \begin{itemize}[noitemsep]
-  \item Pierwsza iteruje po wpisach dotyczących autora, wśród nich są komentarze pod jego wpisami oraz wzmianki.
-  \item Druga iteruje po wpisach, które są przekazaniem wiadomości autora dalej przez innych użytkowników.
+\item Pierwsza iteruje po wpisach dotyczących autora, wśród nich są komentarze pod jego wpisami oraz wzmianki.
+\item Druga iteruje po wpisach, które są przekazaniem wiadomości autora dalej przez innych użytkowników.
 \end{itemize}
 
-Faza Map tworzy obiekt z trzema polami: ilością komentarzy, liczbą wiadomości, które zostały przekazane dalej oraz ilością wzmianek. W funkcji map problem jest definiowany jako inkrementowanie wartości pól obiektu w zależności od typu wpisu. Obiekt statystyk jest mapowany na dziedzinę, czyli dane wpisy grupowane są po dniu. Znacznik czasowy dnia stanowi klucz.
+Faza Map tworzy obiekt z trzema polami: ilością komentarzy, liczbą wiadomości, które zostały przekazane dalej oraz ilością wzmianek. W funkcji map problem jest definiowany, jako inkrementowanie wartości pól obiektu w zależności od typu wpisu. Obiekt statystyk jest mapowany na dziedzinę, czyli dane wpisy grupowane są po dniu. Znacznik czasowy dnia stanowi klucz.
 
 Następnie w fazie Reduce wszystkie liczniki przyporządkowane do tej samej daty (mające wspólną wartość dziedziny, czyli klucza) są sumowane. W odpowiedzi otrzymujemy listę zsumowanych statystyk, zgrupowane po dniu.
 
@@ -58,3 +58,4 @@ Następnie w fazie Reduce wszystkie liczniki przyporządkowane do tej samej daty
 W nawiązaniu do Contineous Query Language (CQL)\cite{stream-query-gorawski}, operatorowi strumień-relacja o oknie czasowym \cite{stream-query-stanford-stochmialek}\cite{stream-processing-streamsql} oraz agregacji danych w oknach czasowych zostały znalezione rozwiązania, które realizują funkcjonalności przy założeniu, że wyznaczanie przedziału czasowego odbywa się jednokrotnie, a czas jest stały.
 
 Rozpoznane zostały narzędzia takie jak Apache Hadoop, czy Apache Spark.
+

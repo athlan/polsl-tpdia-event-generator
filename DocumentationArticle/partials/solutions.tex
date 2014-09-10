@@ -3,7 +3,7 @@
 
 \subsection{Hadoop}
 \label{sec:solutions:hadoop}
-Hadoop to darmowy framework rozwijany przez firmę Apache. Jest to framework oparty o język Java, który wspiera przetwarzanie  dużych zbiorów danych w rozproszonym środowisku obliczeniowym. Hadoop umożliwia uruchomienie aplikacji na systemie z tysiącami węzłów obejmujących tysiące terabajtów danych. Jego rozproszony system plików umożliwia szybkie przesyłanie danych pomiędzy poszczególnymi węzłami oraz działa nieprzerwanie w przypadku awarii węzła. To podejście zmniejsza  ryzyko wystąpienia awarii systemy, nawet jeśli znacząca ilość węzłów ulegnie awarii. Obecnie Hadoop zawiera:
+Hadoop to darmowy framework rozwijany przez firmę Apache. Jest to framework oparty o język Java, który wspiera przetwarzanie dużych zbiorów danych w rozproszonym środowisku obliczeniowym. Hadoop umożliwia uruchomienie aplikacji na systemie z tysiącami węzłów obejmujących tysiące terabajtów danych. Jego rozproszony system plików umożliwia szybkie przesyłanie danych pomiędzy poszczególnymi węzłami oraz działa nieprzerwanie w przypadku awarii węzła. To podejście zmniejsza ryzyko wystąpienia awarii systemy, nawet, jeśli znacząca ilość węzłów ulegnie awarii. Obecnie Hadoop zawiera:
 
 \begin{itemize}[noitemsep]
 \item jądro Hadoop
@@ -38,7 +38,7 @@ Hive nie oferuje przetwarzania zapytań w czasie rzeczywistym i aktualizacji wie
 \item tolerancja błędów
 \end{itemize}
 
-Hive zawiera HCatalog i WebHCat. HCatalog jest warstwą zarządzającą tabelami i pamięcią dla Hadoop, która możliwa użytkownikowi korzystać z różnych narzędzi do przetwarzania danych (np. MapReduce) w celu łatwiejszego odczytu i zapisu danych. WebHCat oferuje usługi, które umożliwiają uruchomienia na Hadoop'ie MapReduce, zadań Hive lub wykonać operację metadanową za pomocą protokołu HTTP(REST).
+Hive zawiera HCatalog i WebHCat. HCatalog jest warstwą zarządzającą tabelami i pamięcią dla Hadoop, która możliwa użytkownikowi korzystać z różnych narzędzi do przetwarzania danych, (np. MapReduce) w celu łatwiejszego odczytu i zapisu danych. WebHCat oferuje usługi, które umożliwiają uruchomienia na Hadoop'ie MapReduce, zadań Hive lub wykonać operację metadanową za pomocą protokołu HTTP(REST).
 
 \subsection{Spark (Stream Spark)}
 \label{sec:solutions:spark}
@@ -46,28 +46,29 @@ Hive zawiera HCatalog i WebHCat. HCatalog jest warstwą zarządzającą tabelami
 Apache Spark to projekt, którego częścią jest Apache Spark Streaming, czyli framework, który umożliwia przetwarzanie strumieniowych, stale napływających o dużej częstotliwości danych w czasie rzeczywistym. Dane mogą pochodzić z różnych źródeł, takich jak Kafka, Flume, ZeroMQ, czy natywne gniazda TCP (czyli implementacja zaproponowana w \ref{sec:eventgenerator-eventreceiver}). Przetworzone dane mogą być składowane na dysku, w bazach danych, wysyłane na szyny danych. Spark dostarcza również wbudowane algorytmy uczenia maszynowego (ang. \emph{machine learning}) oraz analizowania grafów (ang. \emph{graph processing}). Dane są definiowane pojęciem RDD\cite{manual-apache-spark-streaming} i nie zmieniają swojego stanu (\emph{immutable state}).
 
 \begin{figure}[h!]
-  \centering
-    \includegraphics[scale=0.75]{spark-streaming-arch.png}
-  \caption{Zasada działania Apache Spark Stream}
-  \label{fig:spark-streaming-arch}
+\centering
+\includegraphics[scale=0.75]{spark-streaming-arch.png}
+\caption{Zasada działania Apache Spark Stream}
+\label{fig:spark-streaming-arch}
 \end{figure}
 
 Apache Spark Streaming umożliwia również obliczenia na przesuwnym oknie RDD:
 
 \begin{figure}[h!]
-  \centering
-    \includegraphics[scale=0.75]{spark-streaming-dstream-window.png}
-  \caption{Przesuwne okno czasowe w Apache Spark Streaming}
-  \label{fig:spark-streaming-dstream-window}
+\centering
+\includegraphics[scale=0.75]{spark-streaming-dstream-window.png}
+\caption{Przesuwne okno czasowe w Apache Spark Streaming}
+\label{fig:spark-streaming-dstream-window}
 \end{figure}
 
 Wykorzystanie Spark Streaming umożliwia wykonywanie operacji na strumieniu danych znanych z MapReduce oraz strumieniowych baz danych, w szczególności:
 
 \begin{itemize}[noitemsep]
-  \item map
-  \item reduce
-  \item filter
-  \item transform
-  \item union - złączenie źródeł danych
-  \item count oraz countByValue
+\item map
+\item reduce
+\item filter
+\item transform
+\item union - złączenie źródeł danych
+\item count oraz countByValue
 \end{itemize}
+
