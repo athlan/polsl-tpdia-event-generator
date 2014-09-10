@@ -2,8 +2,9 @@
 
 \subsection{Zmaterializowana lista agregatów}
 \subsubsection{Pojęcie agregatu}
+\label{sec:impl-mal-aggregate}
 
-Na potrzeby projektu zostało zdefiniowane pojęcie agregatu jako obiektu który zawiera jednostkę informacji skojarzoną z danym kluczem. Inaczej mówiąc, jednostka informacji jest rozumiana jako zgrupowana wartość według klucza.
+Na potrzeby projektu zostało zdefiniowane pojęcie agregatu\cite{mal-lru-gorawski} jako obiektu który zawiera jednostkę informacji skojarzoną z danym kluczem. Inaczej mówiąc, jednostka informacji jest rozumiana jako zgrupowana wartość według klucza.
 
 Rozpatrujemy listę zmaterializowanych agregatów dla przestrzennego klucza temporalno-czasowego, których kluczem jest identyfikator miejsca (\emph{venueId}) oraz znacznik czasowy (\emph{timestamp}) wyrównany do okna czasowego (np minuty, godziny, dnia, miesiąca, roku)\footnote{Poprzez wyrównanie stempla czasowego do godziny mamy na myśli stempel czasowy pierwszej sekundy danej godziny, dla roku pierwszą sekundę pierszego dnia itd.}.
 
@@ -35,10 +36,12 @@ Mapery mogą zostać połączone w łańcuch (\emph{Mapper Chain}), tak, aby dan
 
 \begin{figure}[h!]
   \centering
-    \includegraphics[scale=0.75]{impl-mapping-chain.png}
+    \includegraphics[scale=0.65]{impl-mapping-chain.png}
   \caption{Zasada łączenia Mapperów w łańcuch}
   \label{fig:impl-mapping-chain}
 \end{figure}
+
+\lstinputlisting[language=java]{../MaterializedAggregationFramework/src/pl/polsl/tpdia/mal/IAggregateMapper.java}
 
 Agregaty logicznie ułożone są w kompozycję przypominającą dynamicznie tworzoną strukturę drzewiastą wg klucza. Fizycznie nie ma między nimi żadnych powiązań (referencji), a źródło danych, w którym utrwalane są agregaty, może być odpytywane punktowo.
 
@@ -46,7 +49,7 @@ Agregaty logicznie ułożone są w kompozycję przypominającą dynamicznie twor
 
 Każda porcja informacji, kótra trafia do systemu, zamieniana jest na agregat i iterpretowana jako wartość atomowa. Operacja ta ma na celu narzucenie struktury porcji informacji, czyli klucza oraz zestawu wartości. W ten sposób tworzone są pierwsze agregaty.
 
-Zapytania zadane systemowi są przekazywane \emph{Procesorowi zapytań}, który rozbijane je na XX fazy:
+Zapytania zadane systemowi są przekazywane \emph{Procesorowi zapytań}, który rozbijane je na 4 fazy:
 
 \begin{itemize}[noitemsep]
   \item analiza semantyczna zapytania,
@@ -63,6 +66,10 @@ Agregaty mogą być tworzone w dowolnych momentach, a w szczególności:
   \item w zależności od charakterystyki i obciążenia systemu (np jest więcej zapisów, niż odczytów), obliczanie agregatów może zostać opóźniane
 \end{itemize}
 
+Za wyliczenie agregatów odpowiedzialny jest mechanizm Reducera, który przyjmuje jako argumenty wjściowe klucz, po którym agregowane dane oraz listę wartości do agregacji. Jako wynik zwraca nowy agregat.
+
+\lstinputlisting[language=java]{../MaterializedAggregationFramework/src/pl/polsl/tpdia/mal/IAggregateReducer.java}
+
 \subsubsection{Sposób wyznaczania tworzenia agregatów przez procesor zapytań}
 
 Gdy do systemu trafia zapytanie zakresowe po kluczu \emph{IAggregateKey} o wyliczenie wartości bazjąych na \emph{IAggregateValue} procesor zapytań analizuje zakres zapytania i na podstawie łańcucha mapperów przygotowuje listę wszystkich możliwie największych agregatów, które mogą zostać wykorzystane do zwrócenia wyniku zapytania.
@@ -78,6 +85,7 @@ Przyjmujemy założenie, że agregacja informacji następuje po miejsach (\emph{
 \end{itemize}
 
 \subsubsection{Drążenie danych - wyznaczanie nieistniejących agregatów}
+\label{sec:impl-mal-computing-aggregates}
 
 Jeżeli agregaty, o które system został zapytany jeszcze nie istnieją w trwałym źródle danych, dekomponowane są na możliwie największe podagregaty (\emph{drążenie danych}). Jeżeli któreś podagregaty są już wcześniej obliczone, nie ma potrzeby ich ponownej dekompozycji, natomiast dla podagregatów, które nie są policzone proces powtarza się, aż proces dekompozycji sięgnie danych źródłowych, które są agregatami atomowymi.
 
@@ -85,17 +93,45 @@ Schemat działania zobrazowany jest na rysunku \ref{impl-aggregate-chunking}.
 
 \begin{figure}[h!]
   \centering
-    \includegraphics[scale=0.75]{impl-aggregate-chunking.png}
-  \caption{Dekomponowanie agregatów oraz drążenie danych. Zielone kwadraty oznaczają obliczone pola, białe nieistniejące, żółtym kolorem oznaczone zostały agregaty atomowe, czyli dane źródłowe}
+    \includegraphics[scale=0.65]{impl-aggregate-chunking.png}
+  \caption{Dekomponowanie agregatów oraz drążenie danych. Zielone kwadraty oznaczają obliczone pola, szare nieistniejące, pomarańczowym kolorem oznaczone zostały agregaty atomowe, czyli dane źródłowe}
   \label{fig:impl-aggregate-chunking}
 \end{figure}
 
-Agregaty tworzone są poprzez zagregow
+\subsection{Aktualizowanie agregatów po pojawieniu się opóźnionej krotki}
 
-\subsection{Aktualizowanie agregatów}
+Dane moga pojawiać się w systemie z opóźnieniem\cite{stream-processing-streamsql}\footnote{\emph{Rule 3: Handle Stream Imperfections (Delayed, Missing and Out-of-Order Data)}}. Przewidziano mechanizmy zapewniające prawidłową prace systemu podczas, gdy agregaty zostały już wyliczone, natomiast pojawienie się nowej danej dezaktualziuje wcześniej zagregowane dane, które pasują do kluczy agregatów wyznaczonych przez mappery.
 
-Od dołu do góry.
+Gdy nowa krotka trafia do systemu, wyliczany jest jej agregat atomowy, a wraz z nim, zgodnie z łańcuchem mapperów po kolei wyznaczane są wszystkie klucze możliwych do stowrzenia agregatów, kaskadowo do góry z logiczną strukturą. Potencjalnie istniejące agregaty odpowiadające wyznaczonym kluczom są odszukiwane w trwałym źródle danych i oznaczane jako nieważne (\emph{invalid}).
 
-\emph{Rule 3: Handle Stream Imperfections (Delayed, Missing and Out-of-Order Data)} \cite{stream-processing-streamsql}
+Zaprezentowana w sekcji \ref{sec:impl-mal-aggregate} struktura agregatu posiada pole określające czy agregat jest aktualny. Jeżeli okaże się, że dane agrekaty ulegną dezaktualizacji, można podjąć kroki opisane w sekcji \ref{sec:impl-mal-computing-aggregates} i drążyć agregaty ponownie wykorzystując jednak wszystkie policzone i ważne agregaty na wszytkich poziomach struktury.
+
+Schemat działania zobrazowany jest na rysunku \ref{impl-aggregate-chunking-rebuild}.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[scale=0.65]{impl-aggregate-chunking-rebuild.png}
+  \caption{Ponowne przeliczanie nieaktualnych agregatów z wykorzystaniem już wyloczonych danych. Czerwonym kolorem zostały zaznaczone agregaty, które zostały zdezaktulizowane poprzez pojawienie się danych z opóźnieniem. Zielone kwadraty oznaczają obliczone pola, szare nieistniejące, pomarańczowym kolorem oznaczone zostały agregaty atomowe, czyli dane źródłowe.}
+  \label{fig:impl-aggregate-chunking-rebuild}
+\end{figure}
+
+\subsection{Przykładowa implementacja}
+
+Poniżej przedstawiono przykładową definicję modelu danych podzących ze stacji paliw na podstawie struktur zdefiniowanych w rozdziale \label{sec:impl-mal-aggregate}. Zostały zaproponowane proty mapper oraz reducer.
+
+
+\lstinputlisting[language=java]{../MaterializedAggregationFramework/src/pl/polsl/tpdia/mal/impl/TuppleEntity.java}
+
+\lstinputlisting[language=java]{../MaterializedAggregationFramework/src/pl/polsl/tpdia/mal/impl/TuppleKey.java}
+
+\lstinputlisting[language=java]{../MaterializedAggregationFramework/src/pl/polsl/tpdia/mal/impl/TuppleValue.java}
+
+\lstinputlisting[language=java]{../MaterializedAggregationFramework/src/pl/polsl/tpdia/mal/impl/TuppleToAggregateMapper.java}
+
+\lstinputlisting[language=java]{../MaterializedAggregationFramework/src/pl/polsl/tpdia/mal/impl/TuppleToAggregateMapperGranulity.java}
+
+\lstinputlisting[language=java]{../MaterializedAggregationFramework/src/pl/polsl/tpdia/mal/impl/TuppleMaterializedAggregateReducer.java}
 
 Powyższe struktury moga zostać odzworowane jako encje bazodanowe za pomocą biblioteki umożliwiającej mapowanie obiektowo-relacyjne, na przykład za pomocą Hibernate. Z uwagi na fakt, iż przedstawiana jest jedynie koncepcja rozwiązania, zgodnie z ideą tworzenia architektury heksagonalnej (nie pożenionej z żadnym konkretnym frameworkiem), struktry pozostawnioe zostały jako zwykłe klasy Java.
+
+Mapper i Reducer może bezpośrednio działać w oparciu o Apache Spark Stream.
