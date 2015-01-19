@@ -17,6 +17,7 @@ public class TuppleToAggregateMapper implements IAggregateMapper<TuppleEntity> {
 			
 			TuppleKey key = item.getKey().clone();
 			key.timestamp = granulity.getAlignedTimestamp(key.timestamp);
+			key.timestampGranulity = granulity.getGranulityRange();
 			
 			return new TuppleEntity(key, item.getValue().clone());
 		}
