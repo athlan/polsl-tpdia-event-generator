@@ -33,7 +33,7 @@ public class QueryBuilderKeysByRange implements IQueryBuilderKeys<TuppleKey> {
 	public List<TuppleKey> getKeys() {
 		List<TuppleKey> result = new ArrayList<TuppleKey>();
 		List<DateRangeProduct> ranges = dateRangeKeysProducerManager.getRanges(new DateRangeProduct(dateRangeStartTimestamp, dateRangeStopTimestamp));
-		
+
 		// collect all produced keys
 		for (DateRangeProduct range : ranges) {
 			if(range.isProcessed) {
